@@ -28,4 +28,4 @@ THEN I am prompted to select an employee to update and their new role and this i
 # Mock-up
 
 The following video shows an example of the application being used from the command line:
-
+[Walkthrough-Video](https://drive.google.com/file/d/1spfsphnbu3vIKAJxx5J2MEBNlnATpxhV/view)

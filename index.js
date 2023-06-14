@@ -4,7 +4,7 @@ const cTable = require('console.table');
 
 // Create connection to database
 const connection = mysql.createConnection({
-  host: 'localhost',
+  host: '127.0.0.1',
   port: 3306,
   user: 'root',
   password: 'password',
@@ -27,9 +27,9 @@ const start = () => {
         type: 'list',
         message: 'What would you like to do?',
         choices: [
-          'View all departments',
-          'View all roles',
-          'View all employees',
+          'View all department',
+          'View all role',
+          'View all employee',
           'Add a department',
           'Add a role',
           'Add an employee',
@@ -40,14 +40,14 @@ const start = () => {
     ])
     .then((answer) => {
       switch (answer.action) {
-        case 'View all departments':
-          viewDepartments();
+        case 'View all department':
+          viewdepartment();
           break;
-        case 'View all roles':
-          viewRoles();
+        case 'View all role':
+          viewrole();
           break;
-        case 'View all employees':
-          viewEmployees();
+        case 'View all employee':
+          viewemployee();
           break;
         case 'Add a department':
           addDepartment();
@@ -72,11 +72,11 @@ const start = () => {
     });
 };
 
-// Query database for all departments and display in table
-const viewDepartments = () => {
+// Query database for all department and display in table
+const viewdepartment = () => {
   const query = `
-    SELECT id AS 'Department ID', name AS 'Department Name'
-    FROM departments
+    SELECT *
+    FROM department
   `;
   connection.query(query, (err, res) => {
     if (err) throw err;
@@ -85,12 +85,12 @@ const viewDepartments = () => {
   });
 };
 
-// Query database for all roles and display in table
-const viewRoles = () => {
+// Query database for all role and display in table
+const viewrole = () => {
   const query = `
-    SELECT roles.id AS 'Role ID', roles.title AS 'Title', departments.name AS 'Department', roles.salary AS 'Salary'
-    FROM roles
-    JOIN departments ON roles.department_id = departments.id
+    SELECT role.id AS 'Role ID', role.title AS 'Title', department.name AS 'Department', role.salary AS 'Salary'
+    FROM role
+    JOIN department ON role.department_id = department.id
   `;
   connection.query(query, (err, res) => {
     if (err) throw err;
@@ -99,21 +99,21 @@ const viewRoles = () => {
   });
 };
 
-// Query database for all employees and display in table
-const viewEmployees = () => {
+// Query database for all employee and display in table
+const viewemployee = () => {
   const query = `
     SELECT
-      employees.id AS 'Employee ID',
-      employees.first_name AS 'First Name',
-      employees.last_name AS 'Last Name',
-      roles.title AS 'Title',
-      departments.name AS 'Department',
-      roles.salary AS 'Salary',
+      employee.id AS 'Employee ID',
+      employee.first_name AS 'First Name',
+      employee.last_name AS 'Last Name',
+      role.title AS 'Title',
+      department.name AS 'Department',
+      role.salary AS 'Salary',
       CONCAT(managers.first_name, ' ', managers.last_name) AS 'Manager'
-    FROM employees
-    JOIN roles ON employees.role_id = roles.id
-    JOIN departments ON roles.department_id = departments.id
-    LEFT JOIN employees managers ON employees.manager_id = managers.id
+    FROM employee
+    JOIN role ON employee.role_id = role.id
+    JOIN department ON role.department_id = department.id
+    LEFT JOIN employee managers ON employee.manager_id = managers.id
   `;
   connection.query(query, (err, res) => {
     if (err) throw err;
@@ -131,7 +131,6 @@ function addDepartment() {
         type: "input",
         name: "name",
         message: "What is the name of the department?",
-        validate: validateStringInput,
       },
     ])
     .then((answer) => {
@@ -140,8 +139,8 @@ function addDepartment() {
         { name: answer.name },
         (err, res) => {
           if (err) throw err;
-          console.log(`\n${answer.name} has been added to departments.\n`);
-          init();
+          console.log(`\n${answer.name} has been added to department.\n`);
+          start();
         }
       );
     });
@@ -151,7 +150,7 @@ function addDepartment() {
 function addRole() {
   connection.query("SELECT * FROM department", (err, res) => {
     if (err) throw err;
-    const departments = res.map((department) => ({
+    const department = res.map((department) => ({
       value: department.id,
       name: department.name,
     }));
@@ -161,19 +160,17 @@ function addRole() {
           type: "input",
           name: "title",
           message: "What is the title of the role?",
-          validate: validateStringInput,
         },
         {
           type: "input",
           name: "salary",
           message: "What is the salary for the role?",
-          validate: validateNumberInput,
         },
         {
           type: "list",
           name: "departmentId",
           message: "What department does the role belong to?",
-          choices: departments,
+          choices: department,
         },
       ])
       .then((answer) => {
@@ -186,8 +183,8 @@ function addRole() {
           },
           (err, res) => {
             if (err) throw err;
-            console.log(`\n${answer.title} has been added to roles.\n`);
-            init();
+            console.log(`\n${answer.title} has been added to role.\n`);
+            start();
           }
         );
       });
@@ -198,7 +195,7 @@ function addRole() {
 function addEmployee() {
   connection.query("SELECT * FROM role", (err, res) => {
     if (err) throw err;
-    const roles = res.map((role) => ({
+    const role = res.map((role) => ({
       value: role.id,
       name: role.title,
     }));
@@ -216,19 +213,17 @@ function addEmployee() {
               type: "input",
               name: "firstName",
               message: "What is the employee's first name?",
-              validate: validateStringInput,
             },
             {
               type: "input",
               name: "lastName",
               message: "What is the employee's last name?",
-              validate: validateStringInput,
             },
             {
               type: "list",
               name: "roleId",
               message: "What is the employee's role?",
-              choices: roles,
+              choices: role,
             },
             {
               type: "list",
@@ -255,9 +250,9 @@ function addEmployee() {
               (err, res) => {
                 if (err) throw err;
                 console.log(
-                  `\n${answer.firstName} ${answer.lastName} has been added to employees.\n`
+                  `\n${answer.firstName} ${answer.lastName} has been added to employee.\n`
                 );
-                init();
+                start();
               }
             );
           });
@@ -265,3 +260,56 @@ function addEmployee() {
     );
   });
 }
+// Update a Current employee
+const updateEmployeeRole = () => {
+	const sqlQuery = 'SELECT id, first_name, last_name, role_id FROM employee';
+	connection.query(sqlQuery, function (error, results) {
+		if (error) throw error;
+		const employees = results.map(employee => ({
+			name: `${employee.first_name} ${employee.last_name}`,
+			value: employee.id,
+		}));
+		employees.unshift({
+			name: 'None',
+			value: null,
+		});
+    inquirer
+			.prompt([
+				{
+					type: 'list',
+					name: 'id',
+					message: "Which employee's role do you want to update?",
+					choices: employees,
+				},
+			])
+			.then(({ id }) => {
+				const roleQuery = 'SELECT * FROM role';
+				connection.query(roleQuery, function (error, results) {
+					if (error) throw error;
+					console.log(results);
+					const roles = results.map(result => ({
+						name: result.title,
+						value: result.id,
+					}));
+
+					inquirer
+						.prompt([
+							{
+								type: 'list',
+								name: 'role_id',
+								message: 'Which is the new role for this employee employee?',
+								choices: roles,
+							},
+						])
+						.then(({ role_id }) => {
+							const updateQuery = `UPDATE employee SET ? WHERE id = ${id}`;
+							connection.query(updateQuery, { role_id }, function (error, results) {
+								if (error) throw error;
+								console.log("Updated employee's role");
+								connection.end();
+							});
+						});
+				});
+			});
+	});
+};

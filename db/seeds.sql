@@ -1,4 +1,4 @@
-USE employee_db;
+-- USE employee_db;
 
 INSERT INTO department (name) VALUES ('Sales'), ('Engineering'), ('Finance'), ('Marketing');
 
@@ -18,11 +18,11 @@ VALUES
   ('Pam', 'Beesly', 4, 1),
   ('Angela', 'Martin', 5, 2),
   ('Kevin', 'Malone', 6, 2),
-  ('Oscar', 'Martinez', 7, 2),
-  ('Ryan', 'Howard', 8, 1),
-  ('Jan', 'Levinson', 9, null),
-  ('Stanley', 'Hudson', 10, 1),
-  ('Meredith', 'Palmer', 11, 2),
-  ('Creed', 'Bratton', 12, 2),
-  ('Kelly', 'Kapoor', 13, 3),
-  ('Toby', 'Flenderson', 14, 1);
+  ('Oscar', 'Martinez', 4, 2),
+  ('Ryan', 'Howard', 2, 1),
+  ('Jan', 'Levinson', 6, null),
+  ('Stanley', 'Hudson', 3, 1),
+  ('Meredith', 'Palmer', 1, 2),
+  ('Creed', 'Bratton', 3, 2),
+  ('Kelly', 'Kapoor', 6, 3),
+  ('Toby', 'Flenderson', 3, 1);
